@@ -16,17 +16,13 @@
                 <b-col md="10" class="text-left">
                     <b-table striped hover :items="studentsList" :fields="fields" :current-page="currentPage" :per-page="perPage">
                         <template slot="show_details" slot-scope="row">
-
-                            <!-- we use @click.stop here to prevent emitting of a 'row-clicked' event  -->
-                            <!--<b-button size="sm" @click.stop="row.toggleDetails" class="mr-2"> -->
-                            <!--{{ row.detailsShowing ? 'Hide' : 'Show'}} Details -->
-                            <!--</b-button> -->
-                            <!-- In some circumstances you may need to use @click.native.stop instead -->
-                            <!-- As `row.showDetails` is one-way, we call the toggleDetails function on @change -->
                             <b-form-checkbox @click.native.stop @change="row.toggleDetails" v-model="row.detailsShowing">
                                 Select for details
                             </b-form-checkbox>
-
+                            <b-button size="sm" @click.stop="showDeleteModal(row.item)" variant="danger">Delete</b-button>
+                        </template>
+                        <template slot="actions" slot-scope="row">
+                            <b-button size="sm" @click.stop="showDeleteModal(row.item)" variant="danger">Delete</b-button>
                         </template>
                         <template slot="row-details" slot-scope="row">
                             <b-row class="mb-2">
@@ -41,6 +37,14 @@
                     </b-row>
                 </b-col>
             </b-row>
+            <b-modal id="delModal"
+                     ref="delModal"
+                     title="Delete Selected Student Information"
+                     ok-title="Yes"
+                     close-title="No"
+                     @ok="">
+                <p> Delete {{deleteModal.name}} ? </p>
+            </b-modal>
         </b-container>
     </div>
 </template>
@@ -57,7 +61,11 @@
                 pageOptions: [5, 10, 15],
                 currentComponent: null,
                 componentsArray: ['foo', 'bar'],
-                isEditMode: false
+                isEditMode: false,
+                deleteModal: {
+                    id: 0,
+                    name: ''
+                }
             }
         },
         methods: {
@@ -73,7 +81,12 @@
                 alert("caught in handleupdateStatus in parent");
                 row.toggleDetails;
                 //this.$router.go(0);
-            }
+            },
+            showDeleteModal(studentInfo) {
+                this.deleteModal.id = studentInfo.ID;
+                this.deleteModal.name = `${studentInfo.FirstName}${studentInfo.LastName}`
+                this.$refs.delModal.show();
+            },
         },
         components: {
             'app-editStudentBoot': editStudentBoot
