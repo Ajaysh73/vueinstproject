@@ -21,12 +21,9 @@
                             </b-form-checkbox>
                             <b-button size="sm" @click.stop="showDeleteModal(row.item)" variant="danger">Delete</b-button>
                         </template>
-                        <template slot="actions" slot-scope="row">
-                            <b-button size="sm" @click.stop="showDeleteModal(row.item)" variant="danger">Delete</b-button>
-                        </template>
                         <template slot="row-details" slot-scope="row">
                             <b-row class="mb-2">
-                                <app-editStudentBoot v-bind:student1="row.item" @updateStatus="handleupdateStatus"></app-editStudentBoot>
+                                <app-editStudentBoot v-bind:student1="row.item" @updateStatus="row.toggleDetails"></app-editStudentBoot>
                             </b-row>
                         </template>
                     </b-table>
@@ -42,7 +39,7 @@
                      title="Delete Selected Student Information"
                      ok-title="Yes"
                      close-title="No"
-                     @ok="">
+                     @ok="handleDelete(deleteModal.id)">
                 <p> Delete {{deleteModal.name}} ? </p>
             </b-modal>
         </b-container>
@@ -76,17 +73,15 @@
             swapComponent: function (component) {
                 this.currentComponent = component;
             },
-            handleupdateStatus(event) {
-                console.log('data after child handle: ', event) // get the data after child dealing
-                alert("caught in handleupdateStatus in parent");
-                row.toggleDetails;
-                //this.$router.go(0);
-            },
+            
             showDeleteModal(studentInfo) {
                 this.deleteModal.id = studentInfo.ID;
-                this.deleteModal.name = `${studentInfo.FirstName}${studentInfo.LastName}`
+                this.deleteModal.name = `${studentInfo.FirstName}${studentInfo.LastName}` 
                 this.$refs.delModal.show();
             },
+            handleDelete(studentId) {
+                this.$store.dispatch('deleteStudentByID', studentId)
+            }
         },
         components: {
             'app-editStudentBoot': editStudentBoot

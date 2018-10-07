@@ -1,11 +1,11 @@
 <template>
-    <div>
-        <b-container>
-            <b-row align-h="center" class="mt-5">
+    <div v-if="show">
+        <b-container >
+            <b-row align-h="center" class="mt-5" >
                 <b-col md="12" class="text-left">
-                    <b-card class="text-left">
+                    <b-card class="text-left" >
                         <h3> Student Information</h3>
-                        <b-form @submit="onSubmit" @reset="onReset" v-if="show">
+                        <b-form @submit="onSubmit" @reset="onReset" >
                             <b-container>
                                 <b-row align-h="center">
                                     <b-col md="6" class="text-left">
@@ -189,7 +189,8 @@
             },
             onReset(evt) {
                 evt.preventDefault();
-                alert("in reset");
+                var status ='cancel';
+                this.$emit("updateStatus", status);
                 /* Trick to reset/clear native browser form validation state */
                 this.show = false;
                 //this.$nextTick(() => { this.show = true });

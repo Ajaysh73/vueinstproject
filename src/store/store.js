@@ -17,7 +17,8 @@ export const store = new Vuex.Store({
             { name: 'cheese' }
         ],
         departments: [],
-        students: []
+        students: [],
+        msg:""
     },
     getters: {
         studentList: state => {
@@ -66,6 +67,17 @@ export const store = new Vuex.Store({
                     error: error.response.data
                 })
             })
+        },
+        deleteStudentByID(store, studentID){
+            console.log('inside deleteStudentByD' + studentID.toString(), '');
+            return Vue.http.delete('http://localhost:59681/api/students/Delete?studentID=' + studentID.toString())
+            .then((response) => {
+            this.msg = response.msg;
+            store.dispatch('fetchStudentsData', {root: true});
+            
+            });
+
+
         }
     }
 })
