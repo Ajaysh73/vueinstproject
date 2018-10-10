@@ -23,7 +23,7 @@
                         </template>
                         <template slot="row-details" slot-scope="row">
                             <b-row class="mb-2">
-                                <app-editStudentBoot v-bind:student1="row.item" @updateStatus="row.toggleDetails"></app-editStudentBoot>
+                                <app-editStudentBoot v-bind:student1="row.item" @updateStatus="row.toggleDetails(); showUpdateMsgModal(row.item,$event);"></app-editStudentBoot>
                             </b-row>
                         </template>
                     </b-table>
@@ -41,6 +41,15 @@
                      close-title="No"
                      @ok="handleDelete(deleteModal.id)">
                 <p> Delete {{deleteModal.name}} ? </p>
+            </b-modal>
+            <b-modal id="updateModal"
+                     ref="updateModal"
+                     title= "Update Status"
+                     ok-only
+                     ok-title="Ok"
+                     @ok="handleUpdate()">
+                <p> Update on student <b>{{updateModal.name}} </b> was {{updateModal.status}}. </br>
+                    Error Message: {{updateModal.failureMsg}}</p>
             </b-modal>
         </b-container>
     </div>
@@ -62,6 +71,12 @@
                 deleteModal: {
                     id: 0,
                     name: ''
+                },
+                 updateModal: {
+                    id: 0,
+                    name: '',
+                    status:'',
+                    failureMsg:''
                 }
             }
         },
@@ -76,11 +91,30 @@
             
             showDeleteModal(studentInfo) {
                 this.deleteModal.id = studentInfo.ID;
-                this.deleteModal.name = `${studentInfo.FirstName}${studentInfo.LastName}` 
+                this.deleteModal.name = `${studentInfo.FirstName} ${studentInfo.LastName}` 
                 this.$refs.delModal.show();
+            },
+            showUpdateMsgModal(studentInfo,event) {
+                this.updateModal.id = studentInfo.ID;
+                this.updateModal.name = `${studentInfo.FirstName}${studentInfo.LastName}` 
+                console.log("InshowUpdateMsgModal", event, event.status, event.statusMsg);
+                if (event.status.valueOf() == "success".valueOf()){
+                    this.updateModal.status = "successful"
+                    this.updateModal.statusMsg =event.statusMsg.bodyText;
+                    this.$refs.updateModal.show();
+                }
+                else{
+                    this.updateModal.status = "unsuccessful"
+                    this.updateModal.failureMsg =event.statusMsg.bodyText;
+                    this.$refs.updateModal.show();
+                }
+         
             },
             handleDelete(studentId) {
                 this.$store.dispatch('deleteStudentByID', studentId)
+            },
+            handleUpdate(){
+                this.$refs.updateModal.hide();
             }
         },
         components: {

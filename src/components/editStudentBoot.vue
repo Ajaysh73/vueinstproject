@@ -176,6 +176,7 @@
                 departments: [],
                 deps: [],
                 show: true,
+                statusObj:{status:"", statusMsg:""}
 
             }
         },
@@ -189,8 +190,9 @@
             },
             onReset(evt) {
                 evt.preventDefault();
-                var status ='cancel';
-                this.$emit("updateStatus", status);
+                this.statusObj.status='cancel';
+                this.statusObj.statusMsg="";
+                this.$emit("updateStatus", this.statusObj);
                 /* Trick to reset/clear native browser form validation state */
                 this.show = false;
                 //this.$nextTick(() => { this.show = true });
@@ -210,18 +212,20 @@
             },
             postChanges: function () {
                 var student = Object.assign({}, this.student1);
-                //delete student['Department_Name'];
-                delete student['_showDetails'];
                 let obj = this.departments.find(x => x.Department_Name === student['Department_Name']);
                 student["Department_ID"] = obj['ID'];
-                delete student['Department_Name'];
-                alert(JSON.stringify(student));
                 this.$http.put('http://localhost:59681/api/students/put', student).then(function (response) {
                     this.submitted = true;
                     this.isEditing = true;
-                    console.log(response);
-                }, function (error) {
-                    alert("Error updating" + error.status);
+                    this.statusObj.status ='success';
+                    this.statusObj.statusMsg="";
+                    console.log("success triggering event");
+                    this.$emit("updateStatus", this.statusObj);
+                })
+                .catch(function (error) {
+                    this.statusObj.status ='fail';
+                    this.statusObj.statusMsg=error;
+                    this.$emit("updateStatus", this.statusObj);
                 });
             }
         },
