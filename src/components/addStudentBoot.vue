@@ -48,6 +48,25 @@
                         <b-form @submit="onSubmit" @reset="onReset" v-if="show">
                             <b-container>
                                 <b-row align-h="center">
+                                    <b-col md="4" class="text-left">
+                                        <image-input v-model="avatar">
+                                            <div slot="activator">
+                                            <v-avatar size="150px" v-ripple v-if="!avatar" class="grey lighten-3 mb-3">
+                                                <span>Click to add avatar</span>
+                                            </v-avatar>
+                                            <v-avatar size="150px" v-ripple v-else class="mb-3">
+                                                <img :src="avatar.imageURL" alt="avatar">
+                                            </v-avatar>
+                                            </div>
+                                        </image-input>
+                                        <v-slide-x-transition>
+                                            <div v-if="avatar && saved == false">
+                                            <v-btn class="primary" @click="uploadImage" :loading="saving">Save Avatar</v-btn>
+                                            </div>
+                                        </v-slide-x-transition>
+                                    </b-col>
+                                </b-row>
+                                <b-row align-h="center">
                                     <b-col md="6" class="text-left">
                                         <b-form-group id="FirstNameGrp"
                                                       label="First Name:"
@@ -197,7 +216,7 @@
 </template>
 
 <script>
-
+import ImageInput from './ImageInput.vue'
   export default {
     data() {
       return {
@@ -228,9 +247,23 @@
         departments: [],
         deps:[],
         show: true,
+        avatar: null,
+        saving: false,
+        saved: false
 
       }
     },
+    components: {
+    ImageInput: ImageInput
+    },
+    watch:{
+    avatar: {
+      handler: function() {
+        this.saved = false
+      },
+      deep: true
+    }
+  },
     computed: {
       departmentNames: function () {
         //var result = objArray.map(a => a.foo);
@@ -273,7 +306,15 @@
         }, function (error) {
           console.log("Error", error.status);
         });
-      }
+      },
+      uploadImage() {
+      this.saving = true
+      setTimeout(() => this.savedAvatar(), 1000)
+    },
+        savedAvatar() {
+         this.saving = false
+        this.saved = true
+        }
     },
 
     created() {
